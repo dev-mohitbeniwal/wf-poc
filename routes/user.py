@@ -6,10 +6,9 @@ from db import get_session
 from models.user import User, UserCreate, UserRead, Token
 from datetime import timedelta, datetime
 from typing import Optional
+from utils.auth import SECRET_KEY, ALGORITHM
 
 ACCESS_TOKEN_EXPIRE_MINUTES=15
-SECRET_KEY="test_secret_key"
-ALGORITHM="HS256"
 
 userRouter = APIRouter(prefix="/api/user")
 

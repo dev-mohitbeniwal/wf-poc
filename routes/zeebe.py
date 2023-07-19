@@ -2,18 +2,20 @@ from fastapi import Depends, HTTPException, APIRouter
 from sqlmodel import Session, select
 from db import get_session
 from models.report import Report
+from models.user import User
 from zeebeClient import client
+from utils.auth import get_current_user
 
 zeebeRouter = APIRouter(prefix="/api/zeebe")
 
 @zeebeRouter.get('/report')
-async def list_reports(session: Session = Depends(get_session)):
+async def list_reports(current_user: User = Depends(get_current_user),  session: Session = Depends(get_session)):
     query = select(Report)
     reports = session.exec(query).all()
     return reports
 
 @zeebeRouter.get('/report/{id}')
-async def get_report(id: int, session: Session = Depends(get_session)):
+async def get_report(id: int, current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     query = select(Report).where(Report.id == id)
     result = session.exec(query).first()
     if not result:
@@ -21,7 +23,7 @@ async def get_report(id: int, session: Session = Depends(get_session)):
     return result
 
 @zeebeRouter.post('/report')
-async def initiate_report(report: Report, session: Session = Depends(get_session)):
+async def initiate_report(report: Report, current_user: User = Depends(get_current_user),  session: Session = Depends(get_session)):
     # Check if the approver exists or not
     query = select(User).where(User.username == report.approver)
     if not session.exec(query).first():
@@ -41,18 +43,13 @@ async def initiate_report(report: Report, session: Session = Depends(get_session
     return new_report
 
 
-@zeebeRouter.put('/report')
-async def update_report(username: str, password: str, reportId: int, session: Session = Depends(get_session)):
+@zeebeRouter.put('/report/{id}')
+async def update_report(id: int, current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     # Check if the approver exists or not
-    query = select(User).where(User.username == username)
-    user = session.exec(query).first()
-    if not (user and user.verify_password(password)):
-        raise HTTPException(status_code=401, detail="Incorrect username or password")
-
-    query = select(Report).where(Report.id == reportId)
+    query = select(Report).where(Report.id == id)
     report = session.exec(query).first()
     if not report:
-        raise HTTPException(status_code=404, detail=f"No report with id: {reportId} found")
+        raise HTTPException(status_code=404, detail=f"No report with id: {id} found")
     
     
 
