@@ -10,8 +10,9 @@ class UserBase(SQLModel):
     username: str
     name: str
     department: str
-    age: int
-    balance: float
+    age: int = None
+    balance: float = None
+    email: str
 
 class UserCreate(UserBase):
     password: str
