@@ -1,13 +1,15 @@
+from routes.order import orderRouter
+from routes.inventory import inventoryRouter
+from routes.product import productRouter
+from routes.user import userRouter, meRouter
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel
 from db import engine
-from routes.user import userRouter, meRouter
-from routes.product import productRouter
-from routes.inventory import inventoryRouter
-from routes.order import orderRouter
+from utils.logger import setup_logging
 
+setup_logging()
 app = FastAPI(title="Workflow POC")
 
 # Add the routes to the app
@@ -32,9 +34,12 @@ app.add_middleware(
 )
 
 # This is to ensure that following function runs only after all the classes and models have been loaded
+
+
 @app.on_event("startup")
 def on_startup():
     SQLModel.metadata.create_all(engine)
+
 
 if __name__ == '__main__':
     uvicorn.run("carsharing:app",  reload=True)
