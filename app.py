@@ -1,16 +1,37 @@
+import uvicorn
+from fastapi import FastAPI, Security
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer, SecurityScopes
+from fastapi.openapi.models import OAuthFlowPassword, OAuthFlows
+from sqlmodel import SQLModel
 from routes.order import orderRouter
 from routes.inventory import inventoryRouter
 from routes.product import productRouter
 from routes.user import userRouter, meRouter
-import uvicorn
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import SQLModel
 from db import engine
 from utils.logger import setup_logging
 
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/api/user/token",
+    scopes={"me": "Read information about the current user.",
+            "items": "Read items."}
+)
+
 setup_logging()
 app = FastAPI(title="Workflow POC")
+
+app.openapi().components.security_schemes["OAuth2"] = {
+    "type": "oauth2",
+    "flows": {
+        "password": {
+            "tokenUrl": "/api/user/token",
+            "scopes": {
+                "me": "Read information about the current user.",
+                "items": "Read items."
+            }
+        }
+    }
+}
 
 # Add the routes to the app
 app.include_router(userRouter)
