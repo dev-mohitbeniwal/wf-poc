@@ -4,7 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel
 from db import engine
 from routes.user import userRouter, meRouter
-from routes.product import productRouter, orderRouter, inventoryRouter
+from routes.product import productRouter
+from routes.inventory import inventoryRouter
+from routes.order import orderRouter
 
 app = FastAPI(title="Workflow POC")
 

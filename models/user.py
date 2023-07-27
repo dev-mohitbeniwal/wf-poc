@@ -7,11 +7,10 @@ from typing import Optional
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class UserBase(SQLModel):
-    username: str
+    username: str = Field(unique=True)
     name: str
     department: str
-    age: int = None
-    balance: float = None
+    balance: Optional[float] = None
     email: str
 
 class UserCreate(UserBase):

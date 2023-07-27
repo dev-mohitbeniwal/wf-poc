@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from db import get_session
 from utils.auth import get_current_user
-from models.product import Product, Inventory, Order
+from models.product import Product, Order
 from models.user import User
 from typing import List
 from zeebeClient import client
@@ -15,16 +15,12 @@ orderRouter = APIRouter(prefix='/api/order')
 
 @orderRouter.get('/', response_model=List[Order])
 def list_orders(user_id: int, current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
-    print('Inside list_orders')
-    print(current_user, 'Inside list_orders')
     orders = session.exec(select(Order).where(Order.user_id == user_id)).all()
-    # orders = session.exec(select(Order)).all()
     return orders
 
 
 @orderRouter.get('/{order_id}', response_model=Order)
 def get_order(order_id: int, current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
-    print("Inside get_order")
     order = session.get(Order, order_id)
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
@@ -48,7 +44,6 @@ async def create_order(product_id: int, current_user: User = Depends(get_current
 
 @orderRouter.put('/{order_id}', response_model=Order)
 async def update_order(order_id: int, status: Optional[str] = None, item_fetched: Optional[int] = None, money_received: Optional[int] = None, current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
-    print('Inside update_order')
     original_order = session.get(Order, order_id)
 
     if not original_order:
