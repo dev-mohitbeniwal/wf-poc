@@ -4,14 +4,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel
 from db import engine
 from routes.user import userRouter, meRouter
-from routes.zeebe import zeebeRouter
 from routes.product import productRouter, orderRouter, inventoryRouter
 
 app = FastAPI(title="Workflow POC")
 
 # Add the routes to the app
 app.include_router(userRouter)
-app.include_router(zeebeRouter)
 app.include_router(productRouter, tags=["Product"])
 app.include_router(orderRouter, tags=["Order"])
 app.include_router(inventoryRouter, tags=["Inventory"])
