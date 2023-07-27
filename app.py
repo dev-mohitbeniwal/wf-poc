@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel
 from db import engine
-from routes.user import userRouter
+from routes.user import userRouter, meRouter
 from routes.zeebe import zeebeRouter
 from routes.product import productRouter, orderRouter, inventoryRouter
 
@@ -15,6 +15,7 @@ app.include_router(zeebeRouter)
 app.include_router(productRouter, tags=["Product"])
 app.include_router(orderRouter, tags=["Order"])
 app.include_router(inventoryRouter, tags=["Inventory"])
+app.include_router(meRouter, tags=["Me"])
 
 
 origins = [

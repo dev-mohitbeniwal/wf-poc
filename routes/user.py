@@ -11,6 +11,7 @@ from utils.auth import SECRET_KEY, ALGORITHM, get_current_user
 ACCESS_TOKEN_EXPIRE_MINUTES=900
 
 userRouter = APIRouter(prefix="/api/user")
+meRouter = APIRouter(prefix="/api/me")
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -99,7 +100,9 @@ def read_user(user_id: int, db: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@userRouter.get("/me")
+
+
+@meRouter.get("/")
 def read_users_me(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
     print('inside read users me')
     user = session.get(User, current_user.id)
